@@ -12,9 +12,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan("com.shijinglu.ecommerceresponsesystem.mapper")
+@MapperScan("com.shijinglu.ecommerceresponsesystem.Dao")
 public class ECommerceResponseSystemApplication {
-
     public static void main(String[] args) {
         SpringApplication.run(ECommerceResponseSystemApplication.class, args);
     }
