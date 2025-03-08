@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.shijinglu.ecommerceresponsesystem.Dao.ProductMapper;
 import com.shijinglu.ecommerceresponsesystem.entity.Category;
 import com.shijinglu.ecommerceresponsesystem.entity.Product;
+import com.shijinglu.ecommerceresponsesystem.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ import java.util.List;
 
 // ProductService.java
 @Service
-public class ProductService {
+public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductMapper productMapper;
 

@@ -11,7 +11,7 @@ import com.shijinglu.ecommerceresponsesystem.common.Result;
 import com.shijinglu.ecommerceresponsesystem.common.ResultCodeEnum;
 import com.shijinglu.ecommerceresponsesystem.entity.Category;
 import com.shijinglu.ecommerceresponsesystem.entity.Product;
-import com.shijinglu.ecommerceresponsesystem.service.impl.ProductService;
+import com.shijinglu.ecommerceresponsesystem.service.impl.ProductServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,54 +26,54 @@ import java.util.Map;
 @RequestMapping("/product")
 public class ProductController {
     @Autowired
-    private ProductService productService;
+    private ProductServiceImpl productServiceImpl;
 
     @PostMapping("/getCategory")
     public Result getCategories() {
-        List<Category> categories = productService.getCategories();
+        List<Category> categories = productServiceImpl.getCategories();
         return Result.success(ResultCodeEnum.SUCCESS, categories);
     }
     @PostMapping("/getPromoProduct")
     public Result getPromoProduct() {
-        List<Category> categories = productService.getCategories();
+        List<Category> categories = productServiceImpl.getCategories();
         return Result.success(ResultCodeEnum.SUCCESS, categories);
     }
 
 //?
     @PostMapping("/getHotProduct")
     public Result getHotProduct() {
-        List<Category> categories = productService.getCategories();
+        List<Category> categories = productServiceImpl.getCategories();
         return Result.success(ResultCodeEnum.SUCCESS, categories);
     }
 //?
     @PostMapping("/getProductByCategory")
     public Result getProductByCategory() {
-        List<Category> categories = productService.getCategories();
+        List<Category> categories = productServiceImpl.getCategories();
         return Result.success(ResultCodeEnum.SUCCESS, categories);
     }
 //?
     @PostMapping("/getProductBySearch")
     public Result getProductBySearch() {
-        List<Category> categories = productService.getCategories();
+        List<Category> categories = productServiceImpl.getCategories();
         return Result.success(ResultCodeEnum.SUCCESS, categories);
     }
 //？
     @PostMapping("/getDetails")
     public Result getDetails() {
-        List<Category> categories = productService.getCategories();
+        List<Category> categories = productServiceImpl.getCategories();
         return Result.success(ResultCodeEnum.SUCCESS, categories);
     }
 //？
     @PostMapping("/getDetailsPicture")
     public Result getDetailsPicture() {
-        List<Category> categories = productService.getCategories();
+        List<Category> categories = productServiceImpl.getCategories();
         return Result.success(ResultCodeEnum.SUCCESS, categories);
     }
 
 
     @PostMapping("/getAllProduct")
     public Result getAllProducts(@RequestBody Map<String, Integer> params) {
-        Page<Product> page = productService.getAllProducts(
+        Page<Product> page = productServiceImpl.getAllProducts(
                 params.get("currentPage"),
                 params.get("pageSize")
         );

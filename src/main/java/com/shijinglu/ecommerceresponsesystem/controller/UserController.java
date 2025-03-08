@@ -8,7 +8,7 @@ package com.shijinglu.ecommerceresponsesystem.controller;
 
 import com.shijinglu.ecommerceresponsesystem.common.Result;
 import com.shijinglu.ecommerceresponsesystem.dto.UserDTO;
-import com.shijinglu.ecommerceresponsesystem.service.impl.UserService;
+import com.shijinglu.ecommerceresponsesystem.service.impl.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,15 +19,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/users")
 public class UserController {
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userServiceImpl;
     @PostMapping("/login")
     public Result login(@RequestBody UserDTO userDto) {
-        return userService.login(userDto.getUsername(), userDto.getPassword());
+        return userServiceImpl.login(userDto.getUsername(), userDto.getPassword());
     }
 
     @PostMapping("/register")
     public Result register(@RequestBody UserDTO userDto) {
-        return userService.register(userDto.getUsername(), userDto.getPassword());
+        return userServiceImpl.register(userDto.getUsername(), userDto.getPassword());
     }
 }
 
