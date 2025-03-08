@@ -80,19 +80,19 @@
            <artifactId>mybatis-spring</artifactId>
             <version>3.0.3</version>
         </dependency>
-<!--        Mybatis-->
-<!--        <dependency>-->
-<!--            <groupId>org.mybatis.spring.boot</groupId>-->
-<!--            <artifactId>mybatis-spring-boot-starter-test</artifactId>-->
-<!--            <version>3.0.4</version>-->
-<!--            <scope>test</scope>-->
-<!--        </dependency>-->
         <!--    knife4j-->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
             <version>4.4.0</version>
         </dependency>
+
+<!--        热部署-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+        </dependency>
+
 
     </dependencies>
     <build>
@@ -114,7 +114,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <exclude>
+                        <exclude>groupId
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
                         </exclude>

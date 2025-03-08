@@ -5,6 +5,7 @@
  */
 
 package com.shijinglu.ecommerceresponsesystem.controller;
+
 import com.shijinglu.ecommerceresponsesystem.common.Result;
 import com.shijinglu.ecommerceresponsesystem.dto.UserDTO;
 import com.shijinglu.ecommerceresponsesystem.service.impl.UserService;
@@ -14,15 +15,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.sql.SQLOutput;
-
 @RestController
 @RequestMapping("/users")
 public class UserController {
-
     @Autowired
     private UserService userService;
-
     @PostMapping("/login")
     public Result login(@RequestBody UserDTO userDto) {
         return userService.login(userDto.getUsername(), userDto.getPassword());

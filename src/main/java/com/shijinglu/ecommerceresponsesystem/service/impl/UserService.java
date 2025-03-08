@@ -19,8 +19,6 @@ public class UserService {
     @Autowired
     private UserMapper userMapper;
 
-//    @Autowired
-//    private WechatService wechatService;
 
     private static final Pattern USERNAME_PATTERN = Pattern.compile("^\\w{4,20}$");
     private static final Pattern PASSWORD_PATTERN = Pattern.compile("^\\w{6,20}$");
