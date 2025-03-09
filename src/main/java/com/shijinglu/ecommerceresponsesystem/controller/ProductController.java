@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.shijinglu.ecommerceresponsesystem.common.Result;
 import com.shijinglu.ecommerceresponsesystem.common.ResultCodeEnum;
 import com.shijinglu.ecommerceresponsesystem.dto.CategoryProductDTO;
+import com.shijinglu.ecommerceresponsesystem.dto.PromoProductRequest;
 import com.shijinglu.ecommerceresponsesystem.entity.Category;
 import com.shijinglu.ecommerceresponsesystem.entity.Product;
 import com.shijinglu.ecommerceresponsesystem.entity.ProductPicture;
@@ -33,19 +34,21 @@ public class ProductController {
         List<Category> categories = productServiceImpl.getCategories();
         return Result.success(ResultCodeEnum.SUCCESS, categories);
     }
-    @PostMapping("/getPromoProduct")
-    public Result getPromoProduct(@RequestParam("categoryName") String categoryName) {
 
-        return Result.success(ResultCodeEnum.SUCCESS, productServiceImpl.getPromoProductsByName(categoryName));
+    @PostMapping("/getPromoProduct")
+    public Result getPromoProduct(@RequestBody PromoProductRequest promoProductRequest) {
+        List<Product> products = productServiceImpl.getPromoProducts(promoProductRequest.getCategoryName());
+        return Result.success(ResultCodeEnum.SUCCESS, products);
     }
 
-//?
+    //?
     @PostMapping("/getHotProduct")
     public Result getHotProduct() {
         List<Category> categories = productServiceImpl.getCategories();
         return Result.success(ResultCodeEnum.SUCCESS, categories);
     }
-//?
+
+    //?
     @PostMapping("/getProductByCategory")
     public Result getProductByCategory(@RequestBody CategoryProductDTO categoryProductDTO) {
         System.out.println(categoryProductDTO.getCategoryID().toString());
@@ -54,23 +57,26 @@ public class ProductController {
         );
         return Result.success(ResultCodeEnum.SUCCESS, page);
     }
-//?
+
+    //?
     @PostMapping("/getProductBySearch")
     public Result getProductBySearch() {
         List<Category> categories = productServiceImpl.getCategories();
         return Result.success(ResultCodeEnum.SUCCESS, categories);
     }
-//？
+
+    //？
     @GetMapping("/getDetails")
     public Result getDetails(@RequestParam("productID") Integer productID) {
         return Result.success(ResultCodeEnum.SUCCESS, productServiceImpl.getProductById(productID));
     }
-//？
-@GetMapping("/getDetailsPicture")
-public Result getDetailsPicture(@RequestParam("productID") Long productID) {
-    List<ProductPicture> pictures = productServiceImpl.getDetailsPicture(productID);
-    return Result.success(ResultCodeEnum.SUCCESS, pictures);
-}
+
+    //？
+    @GetMapping("/getDetailsPicture")
+    public Result getDetailsPicture(@RequestParam("productID") Long productID) {
+        List<ProductPicture> pictures = productServiceImpl.getDetailsPicture(productID);
+        return Result.success(ResultCodeEnum.SUCCESS, pictures);
+    }
 
 
     @PostMapping("/getAllProduct")

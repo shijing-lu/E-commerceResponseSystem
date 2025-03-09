@@ -36,7 +36,7 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.selectCategories();
     }
 
-    public Page<Product> getAllProducts(List<Integer> category,int currentPage, int pageSize) {
+    public Page<Product> getAllProducts(List<Integer> category, int currentPage, int pageSize) {
         // 创建 QueryWrapper
         QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
 
@@ -49,8 +49,8 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public List<Product> getPromoProducts(String categoryName) {
-        Integer categoryId = productMapper.getCategoryIdByName(categoryName);
-        return productMapper.selectPromoProducts(categoryId);
+        Long categoryId = categoryMapper.getCategoryIdByName(categoryName);
+        return productMapper.getPromoProductsByCategoryId(categoryId);
     }
 
     @Override
@@ -60,7 +60,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public List<Product> getPromoProductsByName(String categoryName) {
-        Category category=categoryMapper.selectCategoryByName(categoryName);
+        Category category = categoryMapper.selectCategoryByName(categoryName);
         return productMapper.selectPromoProducts(category.getCategoryId());
     }
 
