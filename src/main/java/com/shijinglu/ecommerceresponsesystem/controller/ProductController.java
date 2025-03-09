@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.shijinglu.ecommerceresponsesystem.common.Result;
 import com.shijinglu.ecommerceresponsesystem.common.ResultCodeEnum;
 import com.shijinglu.ecommerceresponsesystem.dto.CategoryProductDTO;
+import com.shijinglu.ecommerceresponsesystem.dto.HotProductRequest;
 import com.shijinglu.ecommerceresponsesystem.dto.PromoProductRequest;
 import com.shijinglu.ecommerceresponsesystem.entity.Category;
 import com.shijinglu.ecommerceresponsesystem.entity.Product;
@@ -43,9 +44,9 @@ public class ProductController {
 
     //?
     @PostMapping("/getHotProduct")
-    public Result getHotProduct() {
-        List<Category> categories = productServiceImpl.getCategories();
-        return Result.success(ResultCodeEnum.SUCCESS, categories);
+    public Result getHotProduct(@RequestBody HotProductRequest request) {
+        List<Product> products = productServiceImpl.getHotProducts(request.getCategoryName());
+        return Result.success(ResultCodeEnum.SUCCESS, products);
     }
 
     //?

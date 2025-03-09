@@ -18,7 +18,10 @@ import com.shijinglu.ecommerceresponsesystem.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 // ProductService.java
 @Service
@@ -66,6 +69,20 @@ public class ProductServiceImpl implements ProductService {
 
     public List<ProductPicture> getDetailsPicture(Long productId) {
         return productPictureMapper.findByProductId(productId);
+    }
+
+    public List<Product> getHotProducts(List<String> categoryNames) {
+        // 转换分类名称到ID列表
+        List<Long> categoryIds = categoryNames.stream()
+                .map(name -> categoryMapper.getCategoryIdByName(name))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        if (categoryIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return productMapper.findByCategoryIds(categoryIds, 0, 7);
     }
 
 }

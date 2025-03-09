@@ -7,9 +7,12 @@
 package com.shijinglu.ecommerceresponsesystem.Dao;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.shijinglu.ecommerceresponsesystem.Dao.provider.ProductSqlProvider;
 import com.shijinglu.ecommerceresponsesystem.entity.Category;
 import com.shijinglu.ecommerceresponsesystem.entity.Product;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.SelectProvider;
 
 import java.util.List;
 
@@ -27,6 +30,11 @@ public interface ProductMapper extends BaseMapper<Product> {
 
     @Select("SELECT category_id FROM category WHERE category_name = #{categoryName}")
     Integer getCategoryIdByName(String categoryName);
+
+    @SelectProvider(type = ProductSqlProvider.class, method = "getProductByCategory")
+    List<Product> findByCategoryIds(@Param("categoryIds") List<Long> categoryIds,
+                                    @Param("offset") int offset,
+                                    @Param("rows") int rows);
 
 
 }
