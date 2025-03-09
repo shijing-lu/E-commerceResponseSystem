@@ -5,64 +5,66 @@
  */
 
 package com.shijinglu.ecommerceresponsesystem.service.impl;
+
 import com.shijinglu.ecommerceresponsesystem.Dao.UserMapper;
-import com.shijinglu.ecommerceresponsesystem.common.Result;
-import com.shijinglu.ecommerceresponsesystem.common.ResultCodeEnum;
 import com.shijinglu.ecommerceresponsesystem.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import java.util.regex.Pattern;
+
+import java.util.List;
 
 @Service
 public class UserServiceImpl {
-
     @Autowired
     private UserMapper userMapper;
 
+//    @Value("${wechat.appid}")
+//    private String appid;
+//
+//    @Value("${wechat.secret}")
+//    private String secret;
 
-    private static final Pattern USERNAME_PATTERN = Pattern.compile("^\\w{4,20}$");
-    private static final Pattern PASSWORD_PATTERN = Pattern.compile("^\\w{6,20}$");
-
-    public Result login(String username, String password) {
-        // 参数校验
-        if (!validateUserInfo(username, password)) {
-            return Result.error(ResultCodeEnum.BAD_REQUEST, ResultCodeEnum.USER_REGISTER_PARAM_INVALID.getMessage());
-        }
-        // 根据用户名和密码查询用户
-        User user = userMapper.findByUsernameAndPassword(username, password);
-        // 如果用户不存在，返回登录失败
-        if (user == null) {
-            return Result.error(ResultCodeEnum.USER_LOGIN_FAILED, ResultCodeEnum.USER_LOGIN_FAILED.getMessage());
-        }
-        // 返回登录成功
-        return Result.success(ResultCodeEnum.SUCCESS, user);
-    }
-    public Result register(String username, String password) {
-        if (!validateUserInfo(username, password)) {
-            return Result.error(ResultCodeEnum.BAD_REQUEST, ResultCodeEnum.USER_REGISTER_PARAM_INVALID.getMessage());
-        }
-        if (userMapper.existsByUsername(username)) {
-            return Result.error(ResultCodeEnum.USER_PHONE_EXIST);
-        }
-        User newUser = new User();
-        newUser.setUserName(username);
-        newUser.setPassword(password);
-        userMapper.insert(newUser);
-        return Result.success(ResultCodeEnum.SUCCESS);
-
+    public List<User> login(String userName, String password) {
+        return userMapper.login(userName, password);
     }
 
-    private boolean validateUserInfo(String username, String password) {
-        return validateUsername(username) && validatePassword(password);
+    public List<User> findByUserName(String userName) {
+        return userMapper.findByUserName(userName);
     }
 
-    private boolean validateUsername(String username) {
-        return true;
-//        return USERNAME_PATTERN.matcher(username).matches();
+    public int register(String userName, String password) {
+        User user = new User();
+        user.setUserName(userName);
+        user.setPassword(password);
+        return userMapper.register(user);
     }
-    private boolean validatePassword(String password) {
-        return true;
 
-//        return PASSWORD_PATTERN.matcher(password).matches();
-    }
+//    public Map<String, Object> miniProgramLogin(String code) {
+//        String apiUrl = String.format("https://api.weixin.qq.com/sns/jscode2session?" +
+//                        "appid=%s&secret=%s&js_code=%s&grant_type=authorization_code",
+//                appid, secret, code);
+//
+//        // 使用 RestTemplate 调用微信 API
+//        RestTemplate restTemplate = new RestTemplate();
+//        Map<String, Object> response = restTemplate.getForObject(apiUrl, Map.class);
+//
+//        String openid = (String) response.get("openid");
+//        String sessionKey = (String) response.get("session_key");
+//
+//        List<User> users = userMapper.findByUserName(openid);
+//        if (users.isEmpty()) {
+//            User user = new User();
+//            user.setUserName(openid);
+//            user.setPassword(openid);
+//            user.setOpenId(openid);
+//            user.setSessionKey(sessionKey);
+//            userMapper.register(user);
+//        }
+//
+//        // 返回处理结果
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("openid", openid);
+//        result.put("sessionKey", sessionKey);
+//        return result;
+//    }
 }

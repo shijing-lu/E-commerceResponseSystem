@@ -9,23 +9,17 @@ package com.shijinglu.ecommerceresponsesystem.Dao;
 import com.shijinglu.ecommerceresponsesystem.entity.User;
 import org.apache.ibatis.annotations.*;
 
+import java.util.List;
+
 @Mapper
 public interface UserMapper {
+    @Select("SELECT * FROM users WHERE user_name = #{userName} AND password = #{password}")
+    List<User> login(@Param("userName") String userName, @Param("password") String password);
 
-    @Select("SELECT * FROM users WHERE userName = #{username} AND password = #{password}")
-    User findByUsernameAndPassword(@Param("username") String username,
-                                   @Param("password") String password);
+    @Select("SELECT * FROM users WHERE user_name = #{userName}")
+    List<User> findByUserName(String userName);
 
-    @Select("SELECT * FROM users WHERE userName = #{username}")
-    User findByUsername(String username);
-
-    @Select("SELECT COUNT(*) FROM users WHERE userName = #{username}")
-    boolean existsByUsername(String username);
-
-    @Insert("INSERT INTO users (userName, password, openId) VALUES (#{userName}, #{password}, #{openId})")
+    @Insert("INSERT INTO users(user_name, password) VALUES(#{userName}, #{password})")
     @Options(useGeneratedKeys = true, keyProperty = "userId")
-    int insert(User user);
-
-    @Select("SELECT * FROM users WHERE openId = #{openId}")
-    User findByOpenId(String openId);
+    int register(User user);
 }

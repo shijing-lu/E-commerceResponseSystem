@@ -7,15 +7,14 @@
 package com.shijinglu.ecommerceresponsesystem.entity;
 
 public class User {
-    private Integer userId;
+    private Long userId;
     private String userName;
-    private String password;
 
-    public Integer getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(Integer userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 
@@ -35,14 +34,23 @@ public class User {
         this.password = password;
     }
 
-    public String getUserPhoneNumber() {
-        return userPhoneNumber;
+    public String getOpenId() {
+        return openId;
     }
 
-    public void setUserPhoneNumber(String userPhoneNumber) {
-        this.userPhoneNumber = userPhoneNumber;
+    public void setOpenId(String openId) {
+        this.openId = openId;
     }
 
-    private String userPhoneNumber;
-    // Getters and Setters
+    public String getSessionKey() {
+        return sessionKey;
+    }
+
+    public void setSessionKey(String sessionKey) {
+        this.sessionKey = sessionKey;
+    }
+
+    private String password;
+    private String openId;
+    private String sessionKey;
 }
