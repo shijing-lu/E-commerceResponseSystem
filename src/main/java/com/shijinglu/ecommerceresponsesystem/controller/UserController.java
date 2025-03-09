@@ -6,6 +6,8 @@
 
 package com.shijinglu.ecommerceresponsesystem.controller;
 
+import com.shijinglu.ecommerceresponsesystem.common.Result;
+import com.shijinglu.ecommerceresponsesystem.common.ResultCodeEnum;
 import com.shijinglu.ecommerceresponsesystem.entity.User;
 import com.shijinglu.ecommerceresponsesystem.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpSession;
@@ -26,8 +28,8 @@ public class UserController {
     private UserServiceImpl userServiceImpl;
 
     @PostMapping("/login")
-    public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> params,
-                                                     HttpSession session) {
+    public Result login(@RequestBody Map<String, String> params,
+                        HttpSession session) {
 
         String userName = params.get("userName");
         String password = params.get("password");
@@ -35,23 +37,13 @@ public class UserController {
         System.out.println(password);
         List<User> users = userServiceImpl.login(userName, password);
         if (users.size() != 1) {
-            return ResponseEntity.ok(Map.of(
-                    "code", "004",
-                    "msg", "用户名或密码错误"
-            ));
+            return Result.error(ResultCodeEnum.USER_LOGIN_FAILED, ResultCodeEnum.USER_LOGIN_FAILED.getMessage());
         }
 
         User user = users.get(0);
         session.setAttribute("user", user);
 
-        return ResponseEntity.ok(Map.of(
-                "code", "001",
-                "user", Map.of(
-                        "userId", user.getUserId(),
-                        "userName", user.getUserName()
-                ),
-                "msg", "登录成功"
-        ));
+        return Result.success(user);
     }
 
 //    @PostMapping("/miniProgramLogin")
@@ -81,7 +73,7 @@ public class UserController {
 
     @PostMapping("/findUserName")
     public ResponseEntity<Map<String, Object>> findUserName(@RequestBody Map<String, String> params) {
-        List<User> users = userServiceImpl.findByUserName(params.get("userName"));
+        List<User> users = userServiceImpl.findByUserName(params.get("username"));
 
         if (users.isEmpty()) {
             return ResponseEntity.ok(Map.of(
@@ -97,20 +89,14 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<Map<String, Object>> register(@RequestBody Map<String, String> params) {
+    public Result register(@RequestBody Map<String, String> params) {
         List<User> users = userServiceImpl.findByUserName(params.get("userName"));
         if (!users.isEmpty()) {
-            return ResponseEntity.ok(Map.of(
-                    "code", "004",
-                    "msg", "用户名已经存在，不能注册"
-            ));
+            return Result.error(ResultCodeEnum.USER_IS_EXIST);
         }
 
         int result = userServiceImpl.register(params.get("userName"), params.get("password"));
-        return ResponseEntity.ok(Map.of(
-                "code", result == 1 ? "001" : "500",
-                "msg", result == 1 ? "注册成功" : "注册失败"
-        ));
+        return Result.success(result);
     }
 }
 
