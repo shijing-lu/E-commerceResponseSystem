@@ -29,4 +29,5 @@ public interface ProductMapper extends BaseMapper<Product> {
     @Select("SELECT category_id FROM category WHERE category_name = #{categoryName}")
     Integer getCategoryIdByName(String categoryName);
 
+
 }

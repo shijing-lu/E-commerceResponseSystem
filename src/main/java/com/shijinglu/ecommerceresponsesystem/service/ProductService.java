@@ -15,6 +15,10 @@ import java.util.List;
 public interface ProductService {
 
     public List<Category> getCategories();
-    public Page<Product> getAllProducts(int currentPage, int pageSize);
-    public List<Product> getPromoProducts(String categoryName);
+    public Page<Product> getAllProducts(List<Integer> category,int currentPage, int pageSize);
+    public List<Product> getPromoProductsByName(String categoryName);
+
+    public Product getProductById(int id);
+
+
 }

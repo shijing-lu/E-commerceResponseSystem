@@ -8,13 +8,13 @@ package com.shijinglu.ecommerceresponsesystem.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
-import lombok.Data;
 
 
 
 public class Category {
     @TableId(type = IdType.AUTO)
     private Integer categoryId;
+    private String categoryName;
 
     public Integer getCategoryId() {
         return categoryId;
@@ -32,5 +32,5 @@ public class Category {
         this.categoryName = categoryName;
     }
 
-    private String categoryName;
+
 }

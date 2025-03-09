@@ -9,19 +9,19 @@ package com.shijinglu.ecommerceresponsesystem.controller;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.shijinglu.ecommerceresponsesystem.common.Result;
 import com.shijinglu.ecommerceresponsesystem.common.ResultCodeEnum;
+import com.shijinglu.ecommerceresponsesystem.dto.CategoryProductDTO;
 import com.shijinglu.ecommerceresponsesystem.entity.Category;
 import com.shijinglu.ecommerceresponsesystem.entity.Product;
+import com.shijinglu.ecommerceresponsesystem.entity.ProductPicture;
 import com.shijinglu.ecommerceresponsesystem.service.impl.ProductServiceImpl;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 // ProductController.java
+@Slf4j
 @RestController
 @RequestMapping("/product")
 public class ProductController {
@@ -34,9 +34,9 @@ public class ProductController {
         return Result.success(ResultCodeEnum.SUCCESS, categories);
     }
     @PostMapping("/getPromoProduct")
-    public Result getPromoProduct() {
-        List<Category> categories = productServiceImpl.getCategories();
-        return Result.success(ResultCodeEnum.SUCCESS, categories);
+    public Result getPromoProduct(@RequestParam("categoryName") String categoryName) {
+
+        return Result.success(ResultCodeEnum.SUCCESS, productServiceImpl.getPromoProductsByName(categoryName));
     }
 
 //?
@@ -47,9 +47,12 @@ public class ProductController {
     }
 //?
     @PostMapping("/getProductByCategory")
-    public Result getProductByCategory() {
-        List<Category> categories = productServiceImpl.getCategories();
-        return Result.success(ResultCodeEnum.SUCCESS, categories);
+    public Result getProductByCategory(@RequestBody CategoryProductDTO categoryProductDTO) {
+        System.out.println(categoryProductDTO.getCategoryID().toString());
+        Page<Product> page = productServiceImpl.getAllProducts(
+                categoryProductDTO.getCategoryID(), categoryProductDTO.getCurrentPage(), categoryProductDTO.getPageSize()
+        );
+        return Result.success(ResultCodeEnum.SUCCESS, page);
     }
 //?
     @PostMapping("/getProductBySearch")
@@ -58,24 +61,23 @@ public class ProductController {
         return Result.success(ResultCodeEnum.SUCCESS, categories);
     }
 //？
-    @PostMapping("/getDetails")
-    public Result getDetails() {
-        List<Category> categories = productServiceImpl.getCategories();
-        return Result.success(ResultCodeEnum.SUCCESS, categories);
+    @GetMapping("/getDetails")
+    public Result getDetails(@RequestParam("productID") Integer productID) {
+        return Result.success(ResultCodeEnum.SUCCESS, productServiceImpl.getProductById(productID));
     }
 //？
-    @PostMapping("/getDetailsPicture")
-    public Result getDetailsPicture() {
-        List<Category> categories = productServiceImpl.getCategories();
-        return Result.success(ResultCodeEnum.SUCCESS, categories);
-    }
+@GetMapping("/getDetailsPicture")
+public Result getDetailsPicture(@RequestParam("productID") Long productID) {
+    List<ProductPicture> pictures = productServiceImpl.getDetailsPicture(productID);
+    return Result.success(ResultCodeEnum.SUCCESS, pictures);
+}
 
 
     @PostMapping("/getAllProduct")
-    public Result getAllProducts(@RequestBody Map<String, Integer> params) {
+    public Result getAllProducts(@RequestBody CategoryProductDTO categoryProductDTO) {
+
         Page<Product> page = productServiceImpl.getAllProducts(
-                params.get("currentPage"),
-                params.get("pageSize")
+                categoryProductDTO.getCategoryID(), categoryProductDTO.getCurrentPage(), categoryProductDTO.getPageSize()
         );
         return Result.success(ResultCodeEnum.SUCCESS, page);
     }
