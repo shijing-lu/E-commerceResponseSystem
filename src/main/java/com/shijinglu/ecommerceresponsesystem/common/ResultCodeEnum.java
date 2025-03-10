@@ -45,6 +45,7 @@ public enum ResultCodeEnum {
     ORDER_DUPLICATED(409, "重复订单提交"),
     ORDER_PROCESSING(423, "订单处理中"),
     INVALID_REQUEST(424, "数量达到限购"),
+    ORDER_NOT_EXIST(425, "没有订单"),
 
 
     // 支付模块 (D4xxx)
