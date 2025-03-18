@@ -26,15 +26,17 @@ public interface ProductMapper extends BaseMapper<Product> {
     List<Product> selectPromoProducts(Integer categoryId);
 
     @Select("SELECT * FROM product WHERE category_id IN (#{categoryIds}) ORDER BY product_sales DESC LIMIT 7")
-    List<Product> getPromoProductsByCategoryId(Long categoryId);
+    List<Product> getPromoProductsByCategoryId(Integer categoryId);
 
     @Select("SELECT category_id FROM category WHERE category_name = #{categoryName}")
     Integer getCategoryIdByName(String categoryName);
 
     @SelectProvider(type = ProductSqlProvider.class, method = "getProductByCategory")
-    List<Product> findByCategoryIds(@Param("categoryIds") List<Long> categoryIds,
+    List<Product> findByCategoryIds(@Param("categoryIds") List<Integer> categoryIds,
                                     @Param("offset") int offset,
                                     @Param("rows") int rows);
+
+    int deductStock(@Param("productId") Integer productId, @Param("num") Integer num);
 
 
 }

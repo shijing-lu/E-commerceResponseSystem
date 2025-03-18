@@ -9,6 +9,7 @@ package com.shijinglu.ecommerceresponsesystem.Dao;
 import com.shijinglu.ecommerceresponsesystem.entity.User;
 import org.apache.ibatis.annotations.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Mapper
@@ -22,4 +23,8 @@ public interface UserMapper {
     @Insert("INSERT INTO users(user_name, password) VALUES(#{userName}, #{password})")
     @Options(useGeneratedKeys = true, keyProperty = "userId")
     int register(User user);
+
+    int deductBalance(@Param("userId") Integer userId, @Param("amount") BigDecimal amount);
+
+
 }

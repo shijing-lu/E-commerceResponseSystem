@@ -7,7 +7,9 @@
 package com.shijinglu.ecommerceresponsesystem.service.impl;
 
 import com.shijinglu.ecommerceresponsesystem.Dao.OrderMapper;
+import com.shijinglu.ecommerceresponsesystem.Dao.ProductMapper;
 import com.shijinglu.ecommerceresponsesystem.Dao.ShoppingCartMapper;
+import com.shijinglu.ecommerceresponsesystem.Dao.UserMapper;
 import com.shijinglu.ecommerceresponsesystem.common.Result;
 import com.shijinglu.ecommerceresponsesystem.common.ResultCodeEnum;
 import com.shijinglu.ecommerceresponsesystem.dto.OrderResponsed;
@@ -17,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +31,13 @@ public class OrderServiceImpl {
     private OrderMapper orderMapper;
 
     @Autowired
-    ShoppingCartMapper shoppingCartMapper;
+    private ShoppingCartMapper shoppingCartMapper;
+
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private ProductMapper productMapper;
 
     public Result getOrders(String userId) {
         // 2. 获取订单分组
@@ -54,16 +63,30 @@ public class OrderServiceImpl {
 
 
     @Transactional
-    public void createOrder(Integer userId, List<ProductDTO> products) {
+    public Result<Object> createOrder(Integer userId, List<ProductDTO> products) {
+        for (ProductDTO p : products) {
+            int stockUpdated = productMapper.deductStock(p.getProductId(), p.getNum());
+            if (stockUpdated == 0) {
+                return Result.error(ResultCodeEnum.GOODS_STOCK_INSUFFICIENT);
+            }
+        }
+        BigDecimal totalAmount = products.stream()
+                .map(p -> p.getPrice().multiply(BigDecimal.valueOf(p.getNum())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+//用户余额扣减
+        int balanceUpdated = userMapper.deductBalance(userId, totalAmount);
+        if (balanceUpdated == 0) {
+            return Result.error(ResultCodeEnum.USER_BALANCE_INSUFFICIENT);
+        }
+//产品库存扣减
+        System.out.println(totalAmount);
         Long timestamp = System.currentTimeMillis();
         String orderId = userId.toString() + timestamp;
-
         // 构造订单列表
         List<Order> orders = products.stream()
                 .map(p -> new Order(null, orderId, userId,
                         p.getProductId(), p.getNum(), p.getPrice(), timestamp))
                 .collect(Collectors.toList());
-
         // 批量插入订单
         int insertedRows = orderMapper.batchInsert(orders);
         if (insertedRows != products.size()) {
@@ -78,5 +101,6 @@ public class OrderServiceImpl {
         if (deletedTotal != products.size()) {
             throw new RuntimeException("购物车删除数量不匹配");
         }
+        return Result.success(ResultCodeEnum.ORDER_CREATE_SUCCESS);
     }
 }

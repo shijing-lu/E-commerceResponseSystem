@@ -26,6 +26,14 @@ public class Result<T> {
         );
     }
 
+    public static <T> Result<T> success(ResultCodeEnum resultCode) {
+        return new Result<>(
+                String.valueOf(resultCode.getHttpStatus()),
+                resultCode.getMessage(),
+                null
+        );
+    }
+
     // 默认成功方法（使用SUCCESS枚举）
     public static <T> Result<T> success(T data) {
         return success(ResultCodeEnum.SUCCESS, data);
@@ -59,7 +67,15 @@ public class Result<T> {
     }
 
     // Getter方法
-    public String getCode() { return code; }
-    public String getMsg() { return msg; }
-    public T getData() { return data; }
+    public String getCode() {
+        return code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public T getData() {
+        return data;
+    }
 }

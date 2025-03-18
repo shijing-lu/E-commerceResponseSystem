@@ -22,7 +22,7 @@ public interface CategoryMapper extends BaseMapper<Category> {
 
 
     @Select("SELECT category_id FROM category WHERE category_name = #{categoryName}")
-    Long getCategoryIdByName(String categoryName);
+    Integer getCategoryIdByName(String categoryName);
 
 
 }

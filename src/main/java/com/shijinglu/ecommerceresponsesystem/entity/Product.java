@@ -24,6 +24,22 @@ public class Product {
     private String productPicture;
     private Integer productNum;
 
+    public Product() {
+    }
+
+    public Product(Integer productId, Integer categoryId, String productName, String productTitle, String productIntro, BigDecimal productPrice, BigDecimal productSellingPrice, Integer productSales, String productPicture, Integer productNum) {
+        this.productId = productId;
+        this.categoryId = categoryId;
+        this.productName = productName;
+        this.productTitle = productTitle;
+        this.productIntro = productIntro;
+        this.productPrice = productPrice;
+        this.productSellingPrice = productSellingPrice;
+        this.productSales = productSales;
+        this.productPicture = productPicture;
+        this.productNum = productNum;
+    }
+
     public Integer getProductId() {
         return productId;
     }

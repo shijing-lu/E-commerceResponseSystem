@@ -6,26 +6,61 @@
 
 package com.shijinglu.ecommerceresponsesystem.controller;
 
+import com.shijinglu.ecommerceresponsesystem.Dao.UserMapper;
 import com.shijinglu.ecommerceresponsesystem.common.Result;
 import com.shijinglu.ecommerceresponsesystem.common.ResultCodeEnum;
+import com.shijinglu.ecommerceresponsesystem.common.utils.JwtUtils;
 import com.shijinglu.ecommerceresponsesystem.entity.User;
 import com.shijinglu.ecommerceresponsesystem.service.impl.UserServiceImpl;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/users")
+@CrossOrigin(origins = "*")
 public class UserController {
     @Autowired
     private UserServiceImpl userServiceImpl;
+    @Autowired
+    private UserMapper userMapper;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtils jwtUtils;
+
+    @PostMapping("/AdminLogin")
+    public Result AdminLogin(@RequestParam String userName, @RequestParam String password,
+                             HttpSession session) {
+
+//        String userName = userDTO.getUsername();
+//        String password = userDTO.getPassword();
+
+        System.out.print(userName + " ");
+        System.out.print(password + " ");
+
+        List<User> user = userMapper.findByUserName(userName);
+        if (user.size() == 0) {
+            return Result.error(ResultCodeEnum.BAD_REQUEST, "用户不存在");
+        }
+
+        if (!Objects.equals(password, user.get(0).getPassword())) {
+            return Result.error(ResultCodeEnum.BAD_REQUEST, "密码错误");
+        }
+
+        String token = jwtUtils.generateToken(user.get(0).getUserId(), user.get(0).getUserEmailCode());
+        user.get(0).setToken("Bearer " + token);
+        return Result.success(ResultCodeEnum.SUCCESS, user.get(0));
+
+    }
 
     @PostMapping("/login")
     public Result login(@RequestBody Map<String, String> params,
@@ -33,9 +68,8 @@ public class UserController {
 
         String userName = params.get("userName");
         String password = params.get("password");
-        System.out.println(userName);
-        System.out.println(password);
         List<User> users = userServiceImpl.login(userName, password);
+
         if (users.size() != 1) {
             return Result.error(ResultCodeEnum.USER_LOGIN_FAILED, ResultCodeEnum.USER_LOGIN_FAILED.getMessage());
         }

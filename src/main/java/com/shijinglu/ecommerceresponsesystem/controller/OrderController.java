@@ -10,7 +10,6 @@ import com.shijinglu.ecommerceresponsesystem.common.Result;
 import com.shijinglu.ecommerceresponsesystem.dto.OrderRequest;
 import com.shijinglu.ecommerceresponsesystem.service.impl.OrderServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -25,10 +24,9 @@ public class OrderController {
     private OrderServiceImpl orderServiceImpl;
 
     @PostMapping("/addOrder")
-    public ResponseEntity<Map<String, String>> addOrder(@RequestBody OrderRequest request) {
+    public Result addOrder(@RequestBody OrderRequest request) {
         // 登录校验（示例伪代码）
-        orderServiceImpl.createOrder(request.getUserId(), request.getProducts());
-        return ResponseEntity.ok(Map.of("code", "001", "msg", "购买成功"));
+        return orderServiceImpl.createOrder(request.getUserId(), request.getProducts());
     }
 
     @PostMapping("/getOrder")

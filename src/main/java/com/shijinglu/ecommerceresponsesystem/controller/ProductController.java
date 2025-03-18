@@ -20,12 +20,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 // ProductController.java
 @Slf4j
 @RestController
 @RequestMapping("/product")
+@CrossOrigin(origins = "*")
 public class ProductController {
     @Autowired
     private ProductServiceImpl productServiceImpl;
@@ -52,9 +55,19 @@ public class ProductController {
     //?
     @PostMapping("/getProductByCategory")
     public Result getProductByCategory(@RequestBody CategoryProductDTO categoryProductDTO) {
-        System.out.println(categoryProductDTO.getCategoryID().toString());
         Page<Product> page = productServiceImpl.getAllProducts(
                 categoryProductDTO.getCategoryID(), categoryProductDTO.getCurrentPage(), categoryProductDTO.getPageSize()
+        );
+        return Result.success(ResultCodeEnum.SUCCESS, page);
+    }
+
+    @PostMapping("/getProductByCategoryAdmin")
+    public Result getProductByCategory(@RequestParam(required = false) List<Integer> categoryID, @RequestParam int currentPag, @RequestParam int pageSize) {
+        if (categoryID == null) {
+            categoryID = new ArrayList<>();
+        }
+        Page<Product> page = productServiceImpl.getAllProducts(
+                categoryID, currentPag, pageSize
         );
         return Result.success(ResultCodeEnum.SUCCESS, page);
     }
@@ -89,5 +102,29 @@ public class ProductController {
         return Result.success(ResultCodeEnum.SUCCESS, page);
     }
 
+    @PostMapping(
+            value = "/insertTbItem"
+    )
+    // 创建商品
+    public Result createProduct(
+            @RequestParam("title") String title,
+            // 商品名称
+            @RequestParam("categoryId") Integer categoryId,
+            // 商品分类ID
+            @RequestParam("sellPoint") String sellPoint,
+            // 商品卖点
+            @RequestParam("price") BigDecimal price,
+            // 商品价格
+            @RequestParam("num") Integer num,
+            // 商品数量
+            @RequestParam(value = "desc", required = false) String description
+    ) {
+        // 创建商品对象
+        Product product = new Product(null, categoryId, title, title, sellPoint, price, price, 0, "http://localhost:8080/images/1.jpg", num);
+        // 调用商品服务层插入商品
+        productServiceImpl.insertProduct(product);
+        // 返回结果
+        return Result.success(ResultCodeEnum.SUCCESS, product);
+    }
 
 }

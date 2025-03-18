@@ -52,7 +52,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public List<Product> getPromoProducts(String categoryName) {
-        Long categoryId = categoryMapper.getCategoryIdByName(categoryName);
+        Integer categoryId = categoryMapper.getCategoryIdByName(categoryName);
         return productMapper.getPromoProductsByCategoryId(categoryId);
     }
 
@@ -73,7 +73,7 @@ public class ProductServiceImpl implements ProductService {
 
     public List<Product> getHotProducts(List<String> categoryNames) {
         // 转换分类名称到ID列表
-        List<Long> categoryIds = categoryNames.stream()
+        List<Integer> categoryIds = categoryNames.stream()
                 .map(name -> categoryMapper.getCategoryIdByName(name))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
@@ -85,4 +85,7 @@ public class ProductServiceImpl implements ProductService {
         return productMapper.findByCategoryIds(categoryIds, 0, 7);
     }
 
+    public void insertProduct(Product product) {
+        productMapper.insert(product);
+    }
 }

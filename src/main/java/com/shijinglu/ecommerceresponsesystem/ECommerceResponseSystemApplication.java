@@ -17,5 +17,4 @@ public class ECommerceResponseSystemApplication {
     public static void main(String[] args) {
         SpringApplication.run(ECommerceResponseSystemApplication.class, args);
     }
-
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.shijinglu.ecommerceresponsesystem.Dao.ProductMapper">
+
+    <!-- 扣减库存 -->
+    <update id="deductStock">
+        UPDATE product
+        SET product_num = product_num - #{num}
+        WHERE product_id = #{productId}
+          AND product_num >= #{num}
+    </update>
+</mapper>

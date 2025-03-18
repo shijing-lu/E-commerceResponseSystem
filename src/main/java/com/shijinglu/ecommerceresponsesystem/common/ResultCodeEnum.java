@@ -29,6 +29,8 @@ public enum ResultCodeEnum {
     USER_LOGIN_FAILED(401, "用户名或密码错误"),
     USER_IS_EXIST(409, "用户名已存在"),
     USER_ACCOUNT_LOCKED(403, "账户已被锁定"),
+    USER_BALANCE_INSUFFICIENT(410, "用户余额不足"),
+
 
     // 商品模块 (B2xxx)
     GOODS_NOT_EXIST(404, "商品不存在"),
@@ -36,9 +38,11 @@ public enum ResultCodeEnum {
     GOODS_SEARCH_INVALID(400, "搜索关键词非法"),
     GOODS_SKU_INVALID(422, "商品规格参数错误"),
     GOODS_OFF_SHELF(404, "商品已下架"),
+    GOODS_STOCK_INSUFFICIENT(420, "商品库存不足"),
 
     // 订单模块 (C3xxx)
     ORDER_CREATE_FAIL(400, "订单创建失败"),
+    ORDER_CREATE_SUCCESS(230, "订单创建成功"),
     ORDER_INVALID_ADDRESS(400, "收货地址无效"),
     ORDER_COUPON_EXPIRED(400, "优惠券已过期"),
     ORDER_STOCK_LACK(422, "库存不足"),
@@ -72,7 +76,8 @@ public enum ResultCodeEnum {
     THIRD_PARTY_ERROR(502, "第三方服务异常"),
 
 
-    DATA_NOT_FOUND(403, "该用户没有收藏");
+    DATA_NOT_FOUND(403, "该用户没有收藏"),
+    ;
 
 
     private final int httpStatus;

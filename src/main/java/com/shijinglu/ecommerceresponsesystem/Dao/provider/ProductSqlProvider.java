@@ -11,7 +11,7 @@ import java.util.Map;
 
 public class ProductSqlProvider {
     public String getProductByCategory(Map<String, Object> params) {
-        List<Long> categoryIds = (List<Long>) params.get("categoryIds");
+        List<Integer> categoryIds = (List<Integer>) params.get("categoryIds");
         int offset = (int) params.get("offset");
         int rows = (int) params.get("rows");
 
