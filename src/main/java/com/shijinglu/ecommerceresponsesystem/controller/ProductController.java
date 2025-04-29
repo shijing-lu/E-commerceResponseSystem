@@ -7,8 +7,10 @@
 package com.shijinglu.ecommerceresponsesystem.controller;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.shijinglu.ecommerceresponsesystem.Dao.ProductMapper;
 import com.shijinglu.ecommerceresponsesystem.common.Result;
 import com.shijinglu.ecommerceresponsesystem.common.ResultCodeEnum;
+import com.shijinglu.ecommerceresponsesystem.dto.AddProductRequest;
 import com.shijinglu.ecommerceresponsesystem.dto.CategoryProductDTO;
 import com.shijinglu.ecommerceresponsesystem.dto.HotProductRequest;
 import com.shijinglu.ecommerceresponsesystem.dto.PromoProductRequest;
@@ -20,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,8 @@ import java.util.List;
 public class ProductController {
     @Autowired
     private ProductServiceImpl productServiceImpl;
+    @Autowired
+    private ProductMapper productMapper;
 
     @PostMapping("/getCategory")
     public Result getCategories() {
@@ -79,10 +82,30 @@ public class ProductController {
         return Result.success(ResultCodeEnum.SUCCESS, categories);
     }
 
+    /*后台添加商品*/
+    @PostMapping("/Products")
+    public Result addProduct(@RequestBody AddProductRequest addProductRequest) {
+        System.out.println(addProductRequest.toString());
+        Product product = new Product();
+        product.setCategoryId(addProductRequest.getGoods_cat());
+        product.setProductName(addProductRequest.getGoods_name());
+        product.setProductPrice(addProductRequest.getGoods_price());
+        product.setProductNum(addProductRequest.getGoods_number());
+        product.setProductIntro(addProductRequest.getGoods_introduce());
+        product.setProductPicture(addProductRequest.getPics());
+        productServiceImpl.insertProduct(product);
+        return Result.success(ResultCodeEnum.SUCCESS);
+    }
+
     //？
     @GetMapping("/getDetails")
     public Result getDetails(@RequestParam("productID") Integer productID) {
         return Result.success(ResultCodeEnum.SUCCESS, productServiceImpl.getProductById(productID));
+    }
+
+    @GetMapping("/hotlist")
+    public Result hostList() {
+        return Result.success(ResultCodeEnum.SUCCESS, productServiceImpl.getHostList());
     }
 
     //？
@@ -102,29 +125,26 @@ public class ProductController {
         return Result.success(ResultCodeEnum.SUCCESS, page);
     }
 
-    @PostMapping(
-            value = "/insertTbItem"
-    )
-    // 创建商品
-    public Result createProduct(
-            @RequestParam("title") String title,
-            // 商品名称
-            @RequestParam("categoryId") Integer categoryId,
-            // 商品分类ID
-            @RequestParam("sellPoint") String sellPoint,
-            // 商品卖点
-            @RequestParam("price") BigDecimal price,
-            // 商品价格
-            @RequestParam("num") Integer num,
-            // 商品数量
-            @RequestParam(value = "desc", required = false) String description
-    ) {
-        // 创建商品对象
-        Product product = new Product(null, categoryId, title, title, sellPoint, price, price, 0, "http://localhost:8080/images/1.jpg", num);
-        // 调用商品服务层插入商品
-        productServiceImpl.insertProduct(product);
-        // 返回结果
-        return Result.success(ResultCodeEnum.SUCCESS, product);
+    /*后台管理系统获取数据分页信息*/
+    @GetMapping("/getProductList")
+    public Result getProductList(@RequestParam String query, @RequestParam int pagenum, @RequestParam int pagesize) {
+        System.out.println("ok");
+        Page<Product> page = productServiceImpl.getAllProducts(null, pagenum, pagesize);
+        return Result.success(ResultCodeEnum.SUCCESS, page);
     }
+
+    /*更新后台商品数据*/
+    @PutMapping("/products")
+    public Result updateProduct(@RequestBody Product product) {
+        productMapper.updateById(product);
+        return Result.success(ResultCodeEnum.SUCCESS);
+    }
+
+    @DeleteMapping("/{productId}")
+    public Result deleteProduct(@PathVariable("productId") Integer productId) {
+        productMapper.deleteById(productId);
+        return Result.success(ResultCodeEnum.SUCCESS);
+    }
+
 
 }
