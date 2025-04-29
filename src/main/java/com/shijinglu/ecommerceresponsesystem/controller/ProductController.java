@@ -23,6 +23,8 @@ import com.shijinglu.ecommerceresponsesystem.service.impl.ProductServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -196,16 +198,13 @@ public class ProductController {
             if (!uploadDir.exists()) {
                 uploadDir.mkdirs();
             }
-
             // 生成唯一文件名
             String originalName = file.getOriginalFilename();
             String fileExtension = originalName.substring(originalName.lastIndexOf("."));
             String uniqueFileName = UUID.randomUUID() + fileExtension;
-
             // 保存文件
             Path filePath = Paths.get(UPLOAD_DIR + uniqueFileName);
             Files.copy(file.getInputStream(), filePath);
-
             // 构造响应数据
             Map<String, String> data = new HashMap<>();
             data.put("tmp_path", "public/imgs/phone/" + uniqueFileName); // 临时访问路径
@@ -219,4 +218,33 @@ public class ProductController {
         }
     }
 
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate; // 确保已注入RedisTemplate
+
+    @GetMapping("/test")
+    public Result test() {
+        try {
+            ValueOperations<String, String> valueOps = redisTemplate.opsForValue();
+
+            // 测试写入Redis
+            String testKey = "test_connection_key";
+            String testValue = "test_value_" + System.currentTimeMillis();
+            valueOps.set(testKey, testValue);
+
+            // 测试读取Redis
+            String retrievedValue = valueOps.get(testKey);
+
+            if (testValue.equals(retrievedValue)) {
+                // 测试成功：能正常读写
+                return Result.success(ResultCodeEnum.SUCCESS, "Redis连接正常");
+            } else {
+                // 数据不一致（可能性极低）
+                return Result.error(ResultCodeEnum.BAD_REQUEST, "Redis连接异常: 数据校验失败");
+            }
+
+        } catch (Exception e) {
+            // 捕获连接异常
+            return Result.error(ResultCodeEnum.BAD_REQUEST, "Redis连接失败: " + e.getMessage());
+        }
+    }
 }
