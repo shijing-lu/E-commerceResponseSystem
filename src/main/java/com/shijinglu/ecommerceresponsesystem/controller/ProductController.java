@@ -15,15 +15,26 @@ import com.shijinglu.ecommerceresponsesystem.dto.CategoryProductDTO;
 import com.shijinglu.ecommerceresponsesystem.dto.HotProductRequest;
 import com.shijinglu.ecommerceresponsesystem.dto.PromoProductRequest;
 import com.shijinglu.ecommerceresponsesystem.entity.Category;
+import com.shijinglu.ecommerceresponsesystem.entity.HotProduct;
 import com.shijinglu.ecommerceresponsesystem.entity.Product;
 import com.shijinglu.ecommerceresponsesystem.entity.ProductPicture;
+import com.shijinglu.ecommerceresponsesystem.service.impl.HotProductServiceImpl;
 import com.shijinglu.ecommerceresponsesystem.service.impl.ProductServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 // ProductController.java
 @Slf4j
@@ -35,6 +46,11 @@ public class ProductController {
     private ProductServiceImpl productServiceImpl;
     @Autowired
     private ProductMapper productMapper;
+    @Autowired
+    private HotProductServiceImpl hotProductServiceImpl;
+
+    final String UPLOAD_DIR = "D:/300_归档/毕业设计/E-commerceResponseSystem/src/main/resources/static/public/imgs/phone/";
+
 
     @PostMapping("/getCategory")
     public Result getCategories() {
@@ -64,16 +80,16 @@ public class ProductController {
         return Result.success(ResultCodeEnum.SUCCESS, page);
     }
 
-    @PostMapping("/getProductByCategoryAdmin")
-    public Result getProductByCategory(@RequestParam(required = false) List<Integer> categoryID, @RequestParam int currentPag, @RequestParam int pageSize) {
-        if (categoryID == null) {
-            categoryID = new ArrayList<>();
-        }
-        Page<Product> page = productServiceImpl.getAllProducts(
-                categoryID, currentPag, pageSize
-        );
-        return Result.success(ResultCodeEnum.SUCCESS, page);
-    }
+//    @PostMapping("/getProductByCategoryAdmin")
+//    public Result getProductByCategory(@RequestParam(required = false) List<Integer> categoryID, @RequestParam int currentPag, @RequestParam int pageSize) {
+//        if (categoryID == null) {
+//            categoryID = new ArrayList<>();
+//        }
+//        Page<Product> page = productServiceImpl.getAllProducts(
+//                categoryID, currentPag, pageSize
+//        );
+//        return Result.success(ResultCodeEnum.SUCCESS, page);
+//    }
 
     //?
     @PostMapping("/getProductBySearch")
@@ -85,7 +101,7 @@ public class ProductController {
     /*后台添加商品*/
     @PostMapping("/Products")
     public Result addProduct(@RequestBody AddProductRequest addProductRequest) {
-        System.out.println(addProductRequest.toString());
+
         Product product = new Product();
         product.setCategoryId(addProductRequest.getGoods_cat());
         product.setProductName(addProductRequest.getGoods_name());
@@ -94,6 +110,11 @@ public class ProductController {
         product.setProductIntro(addProductRequest.getGoods_introduce());
         product.setProductPicture(addProductRequest.getPics());
         productServiceImpl.insertProduct(product);
+        if (addProductRequest.getGoods_cat() == 8) {
+            Product product1 = productServiceImpl.getProductByName(addProductRequest.getGoods_name());
+            HotProduct hotProduct = new HotProduct(product1.getProductId(), product1.getProductNum(), product1.getProductPrice(), product1.getProductSales());
+            hotProductServiceImpl.insertHotProduct(hotProduct);
+        }
         return Result.success(ResultCodeEnum.SUCCESS);
     }
 
@@ -146,5 +167,56 @@ public class ProductController {
         return Result.success(ResultCodeEnum.SUCCESS);
     }
 
+    /*接收图片并储存*/
+    @PostMapping("/pictureUpload")
+    public Result uploadPicture(
+            @RequestParam("file") MultipartFile file,
+            HttpServletRequest request) {
+
+
+        // 验证请求头中的Token（示例实现）
+        String token = request.getHeader("Authorization");
+//    if (token == null || token.isEmpty()) {
+//        response.put("code", 401);
+//        response.put("message", "未授权的访问");
+//        return Result.error(ResultCodeEnum.UNAUTHORIZED, response);
+//    }
+
+        try {
+            // 验证文件类型
+//        String contentType = file.getContentType();
+//        if (!"image/jpeg".equals(contentType) && !"image/png".equals(contentType)) {
+//            response.put("code", 400);
+//            response.put("message", "仅支持JPG/PNG格式");
+//            return Result.error(ResultCodeEnum.BAD_REQUEST, response);
+//        }
+
+            // 创建目录（如果不存在）
+            File uploadDir = new File(UPLOAD_DIR);
+            if (!uploadDir.exists()) {
+                uploadDir.mkdirs();
+            }
+
+            // 生成唯一文件名
+            String originalName = file.getOriginalFilename();
+            String fileExtension = originalName.substring(originalName.lastIndexOf("."));
+            String uniqueFileName = UUID.randomUUID() + fileExtension;
+
+            // 保存文件
+            Path filePath = Paths.get(UPLOAD_DIR + uniqueFileName);
+            Files.copy(file.getInputStream(), filePath);
+
+            // 构造响应数据
+            Map<String, String> data = new HashMap<>();
+            data.put("tmp_path", "public/imgs/phone/" + uniqueFileName); // 临时访问路径
+            data.put("url", "public/imgs/phone/" + uniqueFileName);       // 实际访问路径
+
+            return Result.success(ResultCodeEnum.SUCCESS, data);
+
+        } catch (IOException e) {
+
+            return Result.error(ResultCodeEnum.NOT_FOUND);
+        }
+    }
 
 }

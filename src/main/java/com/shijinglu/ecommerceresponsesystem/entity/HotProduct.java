@@ -16,13 +16,11 @@ public class HotProduct {
     private Integer salesCount;
     private BigDecimal discountRate;
 
-    HotProduct(Integer id, Integer productId, Integer nums, BigDecimal sellingPrice, Integer saleCount, BigDecimal discountRate) {
-        this.id = id;
+    public HotProduct(Integer productId, Integer nums, BigDecimal sellingPrice, Integer saleCount) {
         this.productId = productId;
         this.nums = nums;
         this.sellingPrice = sellingPrice;
         this.salesCount = saleCount;
-        this.discountRate = discountRate;
     }
 
     public BigDecimal getDiscountRate() {

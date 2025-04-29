@@ -105,4 +105,11 @@ public class ProductServiceImpl implements ProductService {
         hotListResponseds.forEach(System.out::println);
         return hotListResponseds;
     }
+
+    /*根据商品名查询商品
+     * */
+    public Product getProductByName(String name) {
+        return productMapper.selectProductByName(name);
+
+    }
 }

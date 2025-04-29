@@ -38,5 +38,6 @@ public interface ProductMapper extends BaseMapper<Product> {
 
     int deductStock(@Param("productId") Integer productId, @Param("num") Integer num);
 
-
+    @Select("SELECT * FROM product WHERE product_name = #{name}")
+    Product selectProductByName(String name);
 }
