@@ -30,6 +30,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -107,14 +108,15 @@ public class ProductController {
         Product product = new Product();
         product.setCategoryId(addProductRequest.getGoods_cat());
         product.setProductName(addProductRequest.getGoods_name());
-        product.setProductPrice(addProductRequest.getGoods_price());
+        product.setProductPrice(BigDecimal.valueOf(9999));
+        product.setProductSellingPrice(addProductRequest.getGoods_price());
         product.setProductNum(addProductRequest.getGoods_number());
         product.setProductIntro(addProductRequest.getGoods_introduce());
         product.setProductPicture(addProductRequest.getPics());
         productServiceImpl.insertProduct(product);
         if (addProductRequest.getGoods_cat() == 8) {
             Product product1 = productServiceImpl.getProductByName(addProductRequest.getGoods_name());
-            HotProduct hotProduct = new HotProduct(product1.getProductId(), product1.getProductNum(), product1.getProductPrice(), product1.getProductSales());
+            HotProduct hotProduct = new HotProduct(product1.getProductId(), product1.getProductNum(), product1.getProductSellingPrice(), product1.getProductSales(), product1.getProductName(), product1.getProductPicture(), product1.getProductPrice());
             hotProductServiceImpl.insertHotProduct(hotProduct);
         }
         return Result.success(ResultCodeEnum.SUCCESS);
@@ -174,25 +176,8 @@ public class ProductController {
     public Result uploadPicture(
             @RequestParam("file") MultipartFile file,
             HttpServletRequest request) {
-
-
-        // 验证请求头中的Token（示例实现）
         String token = request.getHeader("Authorization");
-//    if (token == null || token.isEmpty()) {
-//        response.put("code", 401);
-//        response.put("message", "未授权的访问");
-//        return Result.error(ResultCodeEnum.UNAUTHORIZED, response);
-//    }
-
         try {
-            // 验证文件类型
-//        String contentType = file.getContentType();
-//        if (!"image/jpeg".equals(contentType) && !"image/png".equals(contentType)) {
-//            response.put("code", 400);
-//            response.put("message", "仅支持JPG/PNG格式");
-//            return Result.error(ResultCodeEnum.BAD_REQUEST, response);
-//        }
-
             // 创建目录（如果不存在）
             File uploadDir = new File(UPLOAD_DIR);
             if (!uploadDir.exists()) {

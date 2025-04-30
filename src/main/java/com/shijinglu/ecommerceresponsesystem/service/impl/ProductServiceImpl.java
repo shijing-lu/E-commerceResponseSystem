@@ -12,19 +12,18 @@ import com.shijinglu.ecommerceresponsesystem.Dao.CategoryMapper;
 import com.shijinglu.ecommerceresponsesystem.Dao.HotProductMapper;
 import com.shijinglu.ecommerceresponsesystem.Dao.ProductMapper;
 import com.shijinglu.ecommerceresponsesystem.Dao.ProductPictureMapper;
-import com.shijinglu.ecommerceresponsesystem.dto.HotListResponsed;
 import com.shijinglu.ecommerceresponsesystem.entity.Category;
 import com.shijinglu.ecommerceresponsesystem.entity.HotProduct;
 import com.shijinglu.ecommerceresponsesystem.entity.Product;
 import com.shijinglu.ecommerceresponsesystem.entity.ProductPicture;
 import com.shijinglu.ecommerceresponsesystem.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
+import java.math.BigDecimal;
+import java.util.*;
 import java.util.stream.Collectors;
 
 // ProductService.java
@@ -95,21 +94,70 @@ public class ProductServiceImpl implements ProductService {
         productMapper.insert(product);
     }
 
-    public List<HotListResponsed> getHostList() {
-        List<HotListResponsed> hotListResponseds = new ArrayList<>();
-        List<HotProduct> hotProducts = hotProductMapper.selectList(new QueryWrapper<>());
-        hotProducts.stream().forEach(hotProduct -> {
-            Product pro = productMapper.selectById(hotProduct.getProductId());
-            hotListResponseds.add(new HotListResponsed(hotProduct.getId(), pro.getProductId(), pro.getProductName(), pro.getProductPrice(), hotProduct.getSellingPrice(), hotProduct.getSaleCount(), pro.getProductPicture(), hotProduct.getDiscountRate()));
-        });
-        hotListResponseds.forEach(System.out::println);
-        return hotListResponseds;
+    @Autowired
+    private RedisTemplate<String, String> redisTemplate;
+    private static final BigDecimal defaultDiscountRate = new BigDecimal("0");
+
+    public List<HotProduct> getHostList() {
+//        List<HotListResponsed> hotListResponseds = new ArrayList<>();
+        Set<String> keys = redisTemplate.keys("product:*");
+        List<HotProduct> products = new ArrayList<>();
+
+        if (keys != null) {
+            for (String key : keys) {
+                // 读取哈希数据
+                HashOperations<String, String, String> hashOps = redisTemplate.opsForHash();
+                Map<String, String> entries = hashOps.entries(key);
+
+                // 构建 HotProduct 对象
+                HotProduct product = new HotProduct();
+                try {
+                    product.setId(Integer.parseInt(entries.get("id")));
+                    product.setProductId(Integer.parseInt(entries.get("product_id")));
+                    product.setNums(Integer.parseInt(entries.get("nums")));
+                    product.setProductSellingPrice(new BigDecimal(entries.get("selling_price")));
+                    product.setProductPrice(new BigDecimal(entries.get("Product_Price")));
+                    product.setProductName(entries.get("product_name"));
+                    product.setProductPicture(entries.get("product_picture"));
+
+                    // 处理 sales_count（原逻辑：null → 0）
+                    String salesCountStr = entries.get("sales_count");
+                    Integer salesCount = salesCountStr != null ? Integer.parseInt(salesCountStr) : 0;
+                    product.setSaleCount(salesCount);
+                    // 处理 discount_rate（原逻辑：null → defaultDiscountRate）
+                    String discountRateStr = entries.get("discount_rate");
+                    BigDecimal discountRate = discountRateStr != null
+                            ? new BigDecimal(discountRateStr)
+                            : defaultDiscountRate;
+                    product.setDiscountRate(discountRate);
+                    products.add(product);
+                } catch (Exception e) {
+                    // 处理转换异常（如日志记录或跳过无效数据）
+                    System.err.println("Failed to parse data for key: " + key);
+                }
+            }
+        }
+//        products.stream().forEach(hotProduct -> {
+//            Product pro = productMapper.selectById(hotProduct.getProductId());
+//            hotListResponseds.add(new HotListResponsed(hotProduct.getId(), pro.getProductId(), pro.getProductName(), pro.getProductPrice(), hotProduct.getSellingPrice(), hotProduct.getSaleCount(), pro.getProductPicture(), hotProduct.getDiscountRate()));
+//        });
+//        hotListResponseds.forEach(System.out::println);
+        return products;
     }
 
+    //    public List<HotListResponsed> getHostList() {
+//        List<HotListResponsed> hotListResponseds = new ArrayList<>();
+//        List<HotProduct> hotProducts = hotProductMapper.selectList(new QueryWrapper<>());
+//        hotProducts.stream().forEach(hotProduct -> {
+//            Product pro = productMapper.selectById(hotProduct.getProductId());
+//            hotListResponseds.add(new HotListResponsed(hotProduct.getId(), pro.getProductId(), pro.getProductName(), pro.getProductPrice(), hotProduct.getSellingPrice(), hotProduct.getSaleCount(), pro.getProductPicture(), hotProduct.getDiscountRate()));
+//        });
+//        hotListResponseds.forEach(System.out::println);
+//        return hotListResponseds;
+//    }
     /*根据商品名查询商品
      * */
     public Product getProductByName(String name) {
         return productMapper.selectProductByName(name);
-
     }
 }

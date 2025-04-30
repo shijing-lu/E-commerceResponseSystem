@@ -12,16 +12,59 @@ public class HotProduct {
     private Integer id;
     private Integer productId;
     private Integer nums;
-    private BigDecimal sellingPrice;
+    private BigDecimal productSellingPrice;
     private Integer salesCount;
     private BigDecimal discountRate;
+    private String productName;
+    private String productPicture;
+    private BigDecimal productPrice;
 
-    public HotProduct(Integer productId, Integer nums, BigDecimal sellingPrice, Integer saleCount) {
+    public HotProduct(Integer productId, Integer nums, BigDecimal productSellingPrice
+            , Integer saleCount, String productName, String productPicture, BigDecimal productPrice) {
         this.productId = productId;
         this.nums = nums;
-        this.sellingPrice = sellingPrice;
+        this.productSellingPrice = productSellingPrice;
         this.salesCount = saleCount;
+        this.productName = productName;
+        this.productPicture = productPicture;
+        this.productPrice = productPrice;
     }
+
+    public BigDecimal getProductPrice() {
+        return productPrice;
+    }
+
+    public void setProductPrice(BigDecimal productPrice) {
+        this.productPrice = productPrice;
+    }
+
+    public Integer getSalesCount() {
+        return salesCount;
+    }
+
+    public void setSalesCount(Integer salesCount) {
+        this.salesCount = salesCount;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
+    }
+
+    public String getProductPicture() {
+        return productPicture;
+    }
+
+    public void setProductPicture(String productPicture) {
+        this.productPicture = productPicture;
+    }
+
+    public HotProduct() {
+    }
+
 
     public BigDecimal getDiscountRate() {
         return discountRate;
@@ -55,12 +98,12 @@ public class HotProduct {
         this.nums = nums;
     }
 
-    public BigDecimal getSellingPrice() {
-        return sellingPrice;
+    public BigDecimal getProductSellingPrice() {
+        return productSellingPrice;
     }
 
-    public void setSellingPrice(BigDecimal sellingPrice) {
-        this.sellingPrice = sellingPrice;
+    public void setProductSellingPrice(BigDecimal productSellingPrice) {
+        this.productSellingPrice = productSellingPrice;
     }
 
     public Integer getSaleCount() {

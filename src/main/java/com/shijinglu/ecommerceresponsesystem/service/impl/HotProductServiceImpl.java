@@ -14,8 +14,7 @@ import org.springframework.stereotype.Service;
 // ProductService.java
 @Service
 public class HotProductServiceImpl {
-
-
+    
     @Autowired
     private HotProductMapper hotProductMapper;
 
